@@ -1,0 +1,16 @@
+[
+{
+  "modid": "nbsplayer",
+  "name": "NBS Player",
+  "description": "A simple mod by Le Duy Quang that plays note block sounds.",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["Le Duy Quang"],
+  "credits": "leduyquang753 ground this brain.",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]
