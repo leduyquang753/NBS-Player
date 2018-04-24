@@ -5,11 +5,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import com.xxmicloxx.NoteBlockAPI.NBSDecoder;
-import com.xxmicloxx.NoteBlockAPI.NoteBlockSongPlayer;
-import com.xxmicloxx.NoteBlockAPI.SongEndEvent;
-import com.xxmicloxx.NoteBlockAPI.Sounds;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
@@ -19,38 +14,43 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
 
 @Mod(name="NBS Player", modid="nbsplayer", version="1.0", acceptedMinecraftVersions="[1.12, 1.12.2]")
 public class Main {
 	public static List<File> songs = new ArrayList<File>();
 	private static Iterator<File> current = songs.iterator();
 	public static boolean playing = false;
-	public static NoteBlockSongPlayer player;
+	public static NBSPlayer player;
 	
 	@EventHandler
 	public void init(FMLInitializationEvent event) {
 		MinecraftForge.EVENT_BUS.register(this);
-		MinecraftForge.EVENT_BUS.register(new Sounds());
 		ClientCommandHandler.instance.registerCommand(new Start());
 		ClientCommandHandler.instance.registerCommand(new Stop());
+		ClientCommandHandler.instance.registerCommand(new Next());
 		ClientCommandHandler.instance.registerCommand(new Refresh());
 		refreshSongs();
 	}
 	
 	@SubscribeEvent
-	public void onSongEnd(SongEndEvent event) {
+	public void onTick(ClientTickEvent event) {
+		if (playing) player.onTick();
+	}
+	
+	public static void onSongEnd() {
 		if (playing) next();
 	}
 	
 	public static void sendMsg() {
 		Minecraft.getMinecraft().player.sendMessage(new TextComponentString(
 				TextFormatting.GOLD + "Now playing: " +
-				TextFormatting.GREEN + player.getSong().getAuthor() + " - " + player.getSong().getTitle()
+				TextFormatting.GREEN + player.song.getAuthor() + " - " + player.song.getName()
 				));
 	}
 	
 	public static void play() {
-		if (playing) player.destroy();
+		if (playing) player.stop();
 		if (songs.isEmpty()) {
 			Minecraft.getMinecraft().player.sendMessage(new TextComponentString(
 					TextFormatting.RED + "There are not any songs in songs folder..."
@@ -59,21 +59,21 @@ public class Main {
 		}
 		current = songs.iterator();
 		playing = true;
-		player = new NoteBlockSongPlayer(NBSDecoder.parse(current.next()));
-		player.createThread();
+		player = new NBSPlayer(current.next());
+		player.start();
 		sendMsg();
 	}
 	
 	public static void next() {
-		player.destroy();
+		player.stop();
 		if (!current.hasNext()) current = songs.iterator();
-		player = new NoteBlockSongPlayer(NBSDecoder.parse(current.next()));
-		player.createThread();
+		player = new NBSPlayer(current.next());
+		player.start();
 		sendMsg();
 	}
 	
 	public static void stop() {
-		if (playing) player.destroy();
+		if (playing) player.stop();
 		playing = false;
 	}
 	
