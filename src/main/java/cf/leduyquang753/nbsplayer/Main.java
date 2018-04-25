@@ -32,11 +32,11 @@ public class Main {
 		MinecraftForge.EVENT_BUS.register(this);
 		Keys.register();
 		MinecraftForge.EVENT_BUS.register(new Keys());
-		ClientCommandHandler.instance.registerCommand(new Start());
-		ClientCommandHandler.instance.registerCommand(new OpenGui());
-		ClientCommandHandler.instance.registerCommand(new Stop());
-		ClientCommandHandler.instance.registerCommand(new Next());
-		ClientCommandHandler.instance.registerCommand(new Refresh());
+		ClientCommandHandler.instance.registerCommand(new Start());   // nbsplay
+		ClientCommandHandler.instance.registerCommand(new OpenGui()); // nbsgui
+		ClientCommandHandler.instance.registerCommand(new Stop());    // nbsstop
+		ClientCommandHandler.instance.registerCommand(new Next());    // nbsnext
+		ClientCommandHandler.instance.registerCommand(new Refresh()); // nbsrefresh
 		refreshSongs();
 	}
 	
@@ -55,6 +55,7 @@ public class Main {
 	}
 	
 	public static void sendMsg() {
+		// Now playing: {Song author} - {Song name}
 		Minecraft.getMinecraft().player.sendMessage(new TextComponentString(
 				TextFormatting.GOLD + "Now playing: " +
 				TextFormatting.GREEN + player.song.getAuthor() + " - " + player.song.getName()
@@ -65,6 +66,10 @@ public class Main {
 		return playing;
 	}
 	
+	/**
+	 * Plays index-th song.
+	 * @param index The numerical order of the song in the list.
+	 */
 	public static void seek(int index) {
 		if (playing) player.stop();
 		current = songs.iterator();
@@ -76,6 +81,9 @@ public class Main {
 		currentIndex = index;
 	}
 	
+	/**
+	 * Plays the first song.
+	 */
 	public static void play() {
 		if (playing) player.stop();
 		if (songs.isEmpty()) {
@@ -92,6 +100,9 @@ public class Main {
 		sendMsg();
 	}
 	
+	/**
+	 * Plays the next song.
+	 */
 	public static void next() {
 		player.stop();
 		if (!current.hasNext()) {
@@ -103,16 +114,25 @@ public class Main {
 		sendMsg();
 	}
 	
+	/**
+	 * Pauses playing.
+	 */
 	public static void stop() {
 		if (playing) player.stop();
 		playing = false;
 	}
 	
+	/**
+	 * Continues playing ("continue" cannot be used since it's a reserved word).
+	 */
 	public static void continuu() {
 		if (player != null) player.continuu(); else play();
 		playing = true;
 	}
 	
+	/**
+	 * Refreshes the song list.
+	 */
 	public static void refreshSongs() {
 		stop();
 		String path = Minecraft.getMinecraft().mcDataDir.getAbsolutePath() + "/songs";

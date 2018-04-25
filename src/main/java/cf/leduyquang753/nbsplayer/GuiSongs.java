@@ -8,10 +8,22 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiSlot;
 
+/**
+ * The fancy GUI of the mod... :)
+ * @author Le Duy Quang
+ *
+ */
 public class GuiSongs extends GuiScreen {
 	private SongList songs;
 	private GuiButton startStop;
 	
+	/**
+	 * Converts number of ticks into readable time format. 
+	 * Example: 2520 ticks becomes "1:02" (1 second = 40 ticks).
+	 * 
+	 * @param dur The input number of ticks.
+	 * @return The time sring.
+	 */
 	private static String getTimeString(int dur) {
 		int duration = dur-1;
 		int secs = duration/40;
@@ -27,7 +39,7 @@ public class GuiSongs extends GuiScreen {
 	public void initGui() {
 		super.initGui();
 		this.buttonList.add(new GuiButton(1, 5, this.height-30, 50, 20, "Refresh"));
-		this.buttonList.add(startStop = new GuiButton(2, 60, this.height-30, 50, 20, (Main.playing ? "Pause" : "Play")));
+		this.buttonList.add(startStop = new GuiButton(2, 60, this.height-30, 50, 20, (Main.playing ? "Pause" : "Play"))); // Play / Pause button.
 		this.buttonList.add(new GuiButton(3, this.width-65, this.height-30, 50, 20, "Close"));
 		songs = new SongList();
 		songs.registerScrollButtons(10, 11);
@@ -59,6 +71,7 @@ public class GuiSongs extends GuiScreen {
 	
 	@Override
 	public void mouseClicked(int x, int y, int button) {
+		// Checks if the time bar is clicked. If so, seek the song.
 		float right = 115;
 		float left = this.width-70;
 		float top = this.height-14;
@@ -80,10 +93,13 @@ public class GuiSongs extends GuiScreen {
 	public void drawScreen(int x, int y, float partialTicks) {
 		songs.drawScreen(x, y, partialTicks);
 		if (Main.player != null) if (Main.player.currentTick > -1) {
+			// Draw the name, length of the song and the amount of time passed.
 			this.fontRenderer.drawString(Main.player.song.getAuthor() + " - " + Main.player.song.getName(), 115, this.height-36, 16777215);
 			this.fontRenderer.drawString(getTimeString(Main.player.currentTick), 115, this.height-25, 16777215);
 			String all = getTimeString(Main.player.length);
 			this.fontRenderer.drawString(all, this.width-70-this.fontRenderer.getStringWidth(all), this.height-25, 16777215);
+			
+			// Draw the time bar.
 			Gui.drawRect(115, this.height-14, this.width-70, this.height-9, 0xFF646464);
 			int pos = (int)(115 + (this.width-185)*Main.player.currentTick/Main.player.length);
 			Gui.drawRect(115, this.height-14, pos, this.height-9, 0xFFFFFFFF);
@@ -96,6 +112,11 @@ public class GuiSongs extends GuiScreen {
 		return false;
 	}
 	
+	/**
+	 * The song list of the GUI.
+	 * @author Le Duy Quang
+	 *
+	 */
 	class SongList extends GuiSlot {
 		public SongList() {
 			super(Minecraft.getMinecraft(), GuiSongs.this.width, GuiSongs.this.height, 5, GuiSongs.this.height-45, 18);
@@ -111,7 +132,6 @@ public class GuiSongs extends GuiScreen {
 		}
 		
 		public boolean isSelected(int slot) {
-			
 			if (Main.player != null) return (Main.player.currentTick > -1 && Main.currentIndex == slot);
 			return (Main.playing && Main.currentIndex == slot);
 		}

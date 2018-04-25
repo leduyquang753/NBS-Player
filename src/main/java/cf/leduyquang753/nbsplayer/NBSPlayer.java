@@ -10,6 +10,11 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
 
+/**
+ * Song player engine, the heart of the mod.
+ * @author Le Duy Quang
+ *
+ */
 public class NBSPlayer {
 	public Song song;
 	private static boolean playing = false;
@@ -24,6 +29,7 @@ public class NBSPlayer {
 			stop();
 			Main.onSongEnd();
 		}
+		// Plays the notes at the current tick.
 		if (currentTick%speed == 0 && Minecraft.getMinecraft().world != null) {
 			List<Note> toPlay = getNotesAt(currentTick/speed);
 			if (toPlay.size() > 0) for (Note n : getNotesAt(currentTick/speed)) {
