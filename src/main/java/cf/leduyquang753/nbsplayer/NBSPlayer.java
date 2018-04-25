@@ -1,7 +1,5 @@
 package cf.leduyquang753.nbsplayer;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,8 +14,8 @@ public class NBSPlayer {
 	public Song song;
 	private static boolean playing = false;
 	private int speed = 4;
-	private int currentTick = 0;
-	private int length = 0;
+	public int currentTick = 0;
+	public int length = 0;
 	private static final String[] names = {"harp", "bass", "basedrum", "snare", "hat", "guitar", "flute", "bell", "chime", "xylophone"};
 	
 	public void onTick() {
@@ -26,11 +24,11 @@ public class NBSPlayer {
 			stop();
 			Main.onSongEnd();
 		}
-		if (currentTick%speed == 0) {
+		if (currentTick%speed == 0 && Minecraft.getMinecraft().world != null) {
 			List<Note> toPlay = getNotesAt(currentTick/speed);
 			if (toPlay.size() > 0) for (Note n : getNotesAt(currentTick/speed)) {
 				float pitch = (float)Math.pow(2.0D, (double)(n.getPitch() - 45) / 12.0D);
-				Minecraft.getMinecraft().player.playSound(new SoundEvent(new ResourceLocation("minecraft", "block.note."+names[n.getInstrument().getID()])), 1F, pitch);
+				Minecraft.getMinecraft().player.playSound(new SoundEvent(new ResourceLocation("minecraft", "block.note." + names[n.getInstrument().getID()])), 1F, pitch);
 			}
 		}
 	}
@@ -42,7 +40,7 @@ public class NBSPlayer {
 			for (int i : l.getNoteList().keySet()) max = Math.max(max, i);
 			res = Math.max(res, max);
 		}
-		return (res+10)*speed;
+		return res*speed+120;
 	}
 	
 	private List<Note> getNotesAt(int tick) {
@@ -54,19 +52,18 @@ public class NBSPlayer {
 		return res;
 	}
 	
-	public NBSPlayer(File file) {
-		try {
-			song = new Song(file);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		speed = 40/(song.getTempo()/100);
+	public NBSPlayer(Song song) {
+		this.song = song;
+		speed = 40/(this.song.getTempo()/100);
 		length = getSongLength();
 	}
 	
 	public void start() {
 		currentTick = -1;
+		playing = true;
+	}
+	
+	public void continuu() {
 		playing = true;
 	}
 	
