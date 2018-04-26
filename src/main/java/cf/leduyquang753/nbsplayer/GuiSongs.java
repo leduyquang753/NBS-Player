@@ -1,6 +1,8 @@
 package cf.leduyquang753.nbsplayer;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
@@ -16,6 +18,7 @@ import net.minecraft.client.gui.GuiSlot;
 public class GuiSongs extends GuiScreen {
 	private SongList songs;
 	private GuiButton startStop;
+	private float scale = 0;
 	
 	/**
 	 * Converts number of ticks into readable time format. 
@@ -35,11 +38,54 @@ public class GuiSongs extends GuiScreen {
 		return (hours > 0 ? hours + "h" : "") + ((hours == 0 && minutes > 0) ? minString + ":" : "") + secString + (secs < 60 ? "\"" : "");
 	}
 	
+	/**
+	 * Converts a float into number of percentages.
+	 * @param in The float to convert.
+	 * @return The converted percentage string.
+	 */
+	private String getVolumeString(float in) {
+		return (int) Math.floor(in * 100) + "%";
+	}
+	
+	/**
+	 * Checks if a position is in the volume bar's rectangle.
+	 * @param x X coordinate.
+	 * @param y Y coordinate.
+	 * @return Whether the position is in the volume bar's rectangle, also if true, sets the "scale" variable to the value of the coordinate.
+	 */
+	private boolean inVolumeBar(int x, int y) {
+		float left = 6;
+		float right = 109;
+		float top = height-33;
+		float bottom = height-30;
+		if (x >= left && x <= right && y >= top && y <= bottom) {
+			scale = (x-left) / (right-left);
+			return true;
+		} else return false;
+	}
+	
+	/**
+	 * Checks if a position is in the seek bar's rectangle.
+	 * @param x X coordinate.
+	 * @param y Y coordinate.
+	 * @return Whether the position is in the seek bar's rectangle, also if true, sets the "scale" variable to the value of the coordinate.
+	 */
+	private boolean inSeekBar(int x, int y) {
+		float left = 115;
+		float right = width-70;
+		float top = height-14;
+		float bottom = height-9;
+		if (x >= left && x <= right && y >= top && y <= bottom) {
+			scale = (x-left+1) / (right-left);
+			return true;
+		} else return false;
+	}
+	
 	@Override
 	public void initGui() {
 		super.initGui();
-		this.buttonList.add(new GuiButton(1, 5, this.height-30, 50, 20, "Refresh"));
-		this.buttonList.add(startStop = new GuiButton(2, 60, this.height-30, 50, 20, (Main.playing ? "Pause" : "Play"))); // Play / Pause button.
+		this.buttonList.add(new GuiButton(1, 5, this.height-27, 50, 20, "Refresh"));
+		this.buttonList.add(startStop = new GuiButton(2, 60, this.height-27, 50, 20, (Main.playing ? "Pause" : "Play"))); // Play / Pause button.
 		this.buttonList.add(new GuiButton(3, this.width-65, this.height-30, 50, 20, "Close"));
 		songs = new SongList();
 		songs.registerScrollButtons(10, 11);
@@ -55,7 +101,7 @@ public class GuiSongs extends GuiScreen {
 	public void actionPerformed(GuiButton button) {
 		if (button.enabled) {
 			switch (button.id) {
-			case 1: Main.refreshSongs(); break;
+			case 1: startStop.displayString = "Play"; Main.refreshSongs(); break;
 			case 2: if (Main.playing) {
 				Main.stop();
 				button.displayString = "Play";
@@ -70,46 +116,46 @@ public class GuiSongs extends GuiScreen {
 	}
 	
 	@Override
-	public void mouseClicked(int x, int y, int button) {
-		// Checks if the time bar is clicked. If so, seek the song.
-		float right = 115;
-		float left = this.width-70;
-		float top = this.height-14;
-		float bottom = this.height-9;
-		if (x >= right && x <= left && y >= top && y <= bottom) {
-			float scale = (x-right) / (left-right);
-			float res = Main.player.length*scale;
-			Main.player.currentTick = (int) res;
+	public void mouseClicked(int x, int y, int button) throws IOException {
+		if (inVolumeBar(x, y)) Main.volume = scale;
+		if (inSeekBar(x, y)) {
+			float ticks = Main.player.length * scale;
+			Main.player.currentTick = (int) ticks;
 		}
-		try {
-			super.mouseClicked(x, y, button);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		super.mouseClicked(x, y, button);
 	}
 	
 	@Override
 	public void drawScreen(int x, int y, float partialTicks) {
 		songs.drawScreen(x, y, partialTicks);
+		super.drawScreen(x, y, partialTicks);
 		if (Main.player != null) if (Main.player.currentTick > -1) {
-			// Draw the name, length of the song and the amount of time passed.
 			this.fontRenderer.drawString(Main.player.song.getAuthor() + " - " + Main.player.song.getName(), 115, this.height-36, 16777215);
 			this.fontRenderer.drawString(getTimeString(Main.player.currentTick), 115, this.height-25, 16777215);
 			String all = getTimeString(Main.player.length);
 			this.fontRenderer.drawString(all, this.width-70-this.fontRenderer.getStringWidth(all), this.height-25, 16777215);
-			
-			// Draw the time bar.
+			String songIndex = (Main.currentIndex+1) + "/" + Main.songs.size();
+			this.fontRenderer.drawString(songIndex, this.width-70-this.fontRenderer.getStringWidth(songIndex), this.height-36, 16777215);
 			Gui.drawRect(115, this.height-14, this.width-70, this.height-9, 0xFF646464);
 			int pos = (int)(115 + (this.width-185)*Main.player.currentTick/Main.player.length);
 			Gui.drawRect(115, this.height-14, pos, this.height-9, 0xFFFFFFFF);
 		}
-		super.drawScreen(x, y, partialTicks);
-	}
-	
-	@Override
-	public boolean doesGuiPauseGame() {
-		return false;
+		Gui.drawRect(6, height-33, 109, height-30, 0xFF646464);
+		int pos = (int)(6+103*Main.volume);
+		Gui.drawRect(6, height-33, pos, height-30, 0xFFFFFFFF);
+		if (Main.player != null) if (Main.player.currentTick > -1 && inSeekBar(x, y)) {
+			float ticks = Main.player.length*scale;
+			List<String> tip = new ArrayList<String>();
+			tip.add(getTimeString((int) ticks));
+			drawHoveringText(tip, x-8, height-15);
+		}
+		if (inVolumeBar(x, y)) {
+			List<String> tip = new ArrayList<String>();
+			tip.add("Volume");
+			tip.add("Current: " + getVolumeString(Main.volume));
+			tip.add("Pointed: " + getVolumeString(scale));
+			drawHoveringText(tip, x-8, height-56);
+		}
 	}
 	
 	/**

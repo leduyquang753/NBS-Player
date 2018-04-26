@@ -31,10 +31,10 @@ public class NBSPlayer {
 		}
 		// Plays the notes at the current tick.
 		if (currentTick%speed == 0 && Minecraft.getMinecraft().world != null) {
-			List<Note> toPlay = getNotesAt(currentTick/speed);
-			if (toPlay.size() > 0) for (Note n : getNotesAt(currentTick/speed)) {
-				float pitch = (float)Math.pow(2.0D, (double)(n.getPitch() - 45) / 12.0D);
-				Minecraft.getMinecraft().player.playSound(new SoundEvent(new ResourceLocation("minecraft", "block.note." + names[n.getInstrument().getID()])), 1F, pitch);
+			List<PlayableNote> toPlay = getNotesAt(currentTick/speed);
+			if (toPlay.size() > 0) for (PlayableNote n : getNotesAt(currentTick/speed)) {
+				float pitch = (float)Math.pow(2.0D, (double)(n.note.getPitch() - 45) / 12.0D);
+				Minecraft.getMinecraft().player.playSound(new SoundEvent(new ResourceLocation("minecraft", "block.note." + names[n.note.getInstrument().getID()])), Main.volume * n.volume, pitch);
 			}
 		}
 	}
@@ -49,11 +49,11 @@ public class NBSPlayer {
 		return res*speed+120;
 	}
 	
-	private List<Note> getNotesAt(int tick) {
-		List<Note> res = new ArrayList<Note>();
+	private List<PlayableNote> getNotesAt(int tick) {
+		List<PlayableNote> res = new ArrayList<PlayableNote>();
 		for (Layer l : song.getSongBoard()) {
 			Note n = l.getNoteList().get(tick);
-			if (n != null) res.add(n);
+			if (n != null) res.add(new PlayableNote(n, l.getVolume()/100f));
 		}
 		return res;
 	}

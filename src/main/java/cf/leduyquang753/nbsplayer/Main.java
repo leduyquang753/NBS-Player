@@ -18,7 +18,7 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
 
-@Mod(name="NBS Player", modid="nbsplayer", version="0.2", acceptedMinecraftVersions="[1.12, 1.12.2]")
+@Mod(name="NBS Player", modid="nbsplayer", version="0.3", acceptedMinecraftVersions="[1.12, 1.12.2]")
 public class Main {
 	public static int currentIndex = 0;
 	public static List<Song> songs = new ArrayList<Song>();
@@ -26,6 +26,7 @@ public class Main {
 	public static boolean playing = false;
 	public static NBSPlayer player;
 	public static boolean shouldOpenGui = false;
+	public static float volume = 1;
 	
 	@EventHandler
 	public void init(FMLInitializationEvent event) {
