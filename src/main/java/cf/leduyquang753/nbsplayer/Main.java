@@ -18,10 +18,11 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
 
-@Mod(name="NBS Player", modid="nbsplayer", version="0.3", acceptedMinecraftVersions="[1.12, 1.12.2]")
+@Mod(name="NBS Player", modid="nbsplayer", version="1.0-pre1", acceptedMinecraftVersions="[1.12, 1.12.2]")
 public class Main {
 	public static int currentIndex = 0;
 	public static List<Song> songs = new ArrayList<Song>();
+	public static List<String> names = new ArrayList<String>();
 	private static Iterator<Song> current = songs.iterator();
 	public static boolean playing = false;
 	public static NBSPlayer player;
@@ -136,14 +137,18 @@ public class Main {
 	 */
 	public static void refreshSongs() {
 		stop();
+		player = null;
 		String path = Minecraft.getMinecraft().mcDataDir.getAbsolutePath() + "/songs";
 		File songsFolder = new File(path);
 		File[] files = songsFolder.listFiles();
 		songs = new ArrayList<Song>();
+		names = new ArrayList<String>();
 		if (files != null) for (File f : files) {
 			if (f.getName().toLowerCase().endsWith(".nbs"))
 				try {
-					songs.add(new Song(f));
+					Song s = new Song(f);
+					songs.add(s);
+					names.add(s.getName().trim().equals("") ? f.getName() : s.getAuthor() + " - " + s.getName());
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

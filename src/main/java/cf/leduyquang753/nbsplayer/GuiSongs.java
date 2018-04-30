@@ -130,7 +130,7 @@ public class GuiSongs extends GuiScreen {
 		songs.drawScreen(x, y, partialTicks);
 		super.drawScreen(x, y, partialTicks);
 		if (Main.player != null) if (Main.player.currentTick > -1) {
-			this.fontRenderer.drawString(Main.player.song.getAuthor() + " - " + Main.player.song.getName(), 115, this.height-36, 16777215);
+			this.fontRenderer.drawString(Main.names.get(Main.currentIndex), 115, this.height-36, 16777215);
 			this.fontRenderer.drawString(getTimeString(Main.player.currentTick), 115, this.height-25, 16777215);
 			String all = getTimeString(Main.player.length);
 			this.fontRenderer.drawString(all, this.width-70-this.fontRenderer.getStringWidth(all), this.height-25, 16777215);
@@ -191,7 +191,7 @@ public class GuiSongs extends GuiScreen {
 		}
 		
 		public void drawSlot(int slot, int arg2, int arg3, int arg4, int mouseX, int mouseY, float partialTicks) {
-			GuiSongs.this.drawCenteredString(GuiSongs.this.fontRenderer, Main.songs.get(slot).getAuthor() + " - " + Main.songs.get(slot).getName(), this.width/2, arg3+3, 16777215);
+			GuiSongs.this.drawCenteredString(GuiSongs.this.fontRenderer, Main.names.get(slot), this.width/2, arg3+3, 16777215);
 		}
 	}
 }
