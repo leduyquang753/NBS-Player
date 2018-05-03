@@ -18,7 +18,7 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
 
-@Mod(name="NBS Player", modid="nbsplayer", version="1.0-pre1", acceptedMinecraftVersions="[1.12, 1.12.2]")
+@Mod(name="NBS Player", modid="nbsplayer", version="1.0", acceptedMinecraftVersions="[1.12, 1.12.2]")
 public class Main {
 	public static int currentIndex = 0;
 	public static List<Song> songs = new ArrayList<Song>();
@@ -60,7 +60,7 @@ public class Main {
 		// Now playing: {Song author} - {Song name}
 		Minecraft.getMinecraft().player.sendMessage(new TextComponentString(
 				TextFormatting.GOLD + "Now playing: " +
-				TextFormatting.GREEN + player.song.getAuthor() + " - " + player.song.getName()
+				TextFormatting.GREEN + names.get(currentIndex)
 				));
 	}
 	
