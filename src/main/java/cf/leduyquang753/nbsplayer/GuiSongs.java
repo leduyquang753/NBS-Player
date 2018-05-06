@@ -33,7 +33,7 @@ public class GuiSongs extends GuiScreen {
 	 * @param dur The input number of ticks.
 	 * @return The time sring.
 	 */
-	private static String getTimeString(int dur) {
+	public static String getTimeString(int dur) {
 		int duration = dur-1;
 		int secs = duration/40;
 		int hours = secs/3600;
@@ -139,13 +139,13 @@ public class GuiSongs extends GuiScreen {
 	public void drawScreen(int x, int y, float partialTicks) {
 		songs.drawScreen(x, y, partialTicks);
 		super.drawScreen(x, y, partialTicks);
-		// Display a message when there aren't any songs...
+		// Display a message when there aren't any songs.
 		if (Main.songs.isEmpty()) {
 			fontRenderer.drawString("There aren't any songs to play.", (width-fontRenderer.getStringWidth("There aren't any songs to play."))/2, 15, 16777215);
 			fontRenderer.drawString("Please put some .nbs files in \"songs\" folder", (width-fontRenderer.getStringWidth("Please put some .nbs files in \\\"songs\\\" folder"))/2, 40, 16777215);
 			fontRenderer.drawString("of Minecraft's directory then click \"Refresh\".", (width-fontRenderer.getStringWidth("of Minecraft's directory then click \\\"Refresh\\\"."))/2, 52, 16777215);
 		}
-		if (Main.player != null) if (Main.player.currentTick > -1) {
+		if (Main.player != null) { if (Main.player.currentTick > -1) {
 			// Time bar
 			String songIndex = (Main.currentIndex+1) + "/" + Main.songs.size();
 			int maxWidth = width-185-fontRenderer.getStringWidth(songIndex);
@@ -163,11 +163,13 @@ public class GuiSongs extends GuiScreen {
 			Gui.drawRect(115, height-14, width-70, height-9, 0xFF646464);
 			int pos = (int)(115 + (width-185)*Main.player.currentTick/Main.player.length);
 			Gui.drawRect(115, height-14, pos, height-9, 0xFFFFFFFF);
-		}
+		} } else fontRenderer.drawString(Main.songs.size() + " song" + (Main.songs.size() == 1 ? "" : "s"), 115, height-36, 16777215);
 		// Volume bar
 		Gui.drawRect(6, height-34, 109, height-31, 0xFF646464);
 		int pos = (int)(6+103*Main.volume);
 		Gui.drawRect(6, height-34, pos, height-31, 0xFFFFFFFF);
+		
+		// Tooltips
 		if (Main.player != null) if (Main.player.currentTick > -1 && inSeekBar(x, y)) {
 			float ticks = Main.player.length*scale;
 			List<String> tip = new ArrayList<String>();
@@ -239,7 +241,7 @@ public class GuiSongs extends GuiScreen {
 
 	            if (isSelected(slot))
 	            {
-	            	int halfBoxWidth = Math.min(right-left-23, Minecraft.getMinecraft().fontRenderer.getStringWidth(Main.names.get(Main.currentIndex)))/2;
+	            	int halfBoxWidth = Math.min(right-left-28, Minecraft.getMinecraft().fontRenderer.getStringWidth(Main.names.get(Main.currentIndex)))/2;
 	            	int center = left+(right-left)/2;
 	                int boxLeft = center-halfBoxWidth-4;
 	                int boxRight = center+halfBoxWidth+4;

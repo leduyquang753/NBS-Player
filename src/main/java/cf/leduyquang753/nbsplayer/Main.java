@@ -8,6 +8,7 @@ import java.util.List;
 
 import cf.leduyquang753.nbsapi.Song;
 import net.minecraft.client.Minecraft;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.client.ClientCommandHandler;
@@ -18,7 +19,7 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
 
-@Mod(name="NBS Player", modid="nbsplayer", version="1.0", acceptedMinecraftVersions="[1.12, 1.12.2]")
+@Mod(name="NBS Player", modid="nbsplayer", version="1.1", acceptedMinecraftVersions="[1.12, 1.12.2]")
 public class Main {
 	public static int currentIndex = 0;
 	public static List<Song> songs = new ArrayList<Song>();
@@ -48,7 +49,7 @@ public class Main {
 			Minecraft.getMinecraft().displayGuiScreen(new GuiSongs());
 			shouldOpenGui = false;
 		}
-		if (Minecraft.getMinecraft().world == null) stop();
+		if (Minecraft.getMinecraft().world == null) { stop(); return; }
 		if (playing) player.onTick();
 	}
 	
@@ -57,11 +58,34 @@ public class Main {
 	}
 	
 	public static void sendMsg() {
-		// Now playing: {Song author} - {Song name}
-		Minecraft.getMinecraft().player.sendMessage(new TextComponentString(
-				TextFormatting.GOLD + "Now playing: " +
-				TextFormatting.GREEN + names.get(currentIndex)
-				));
+		try {
+			// Massive JSON stuff! So painful for eyes!
+			// Now playing: {Author} - {Song name}
+			//                            ^^ Tooltip: {Song name}
+			//                                        Author: ...
+			//                                        Original author: ...
+			//                                        Description:
+			//                                        ...
+			//                                        Length: ...
+			String toTell = "[\"\",{\"text\":\"Now playing: \",\"color\":\"gold\"},{\"text\":\"" + names.get(currentIndex)
+			+ "\",\"color\":\"green\",\"hoverEvent\":{\"action\":\"show_text\",\"value\":[\"\",{\"text\":\""
+			+ (player.song.getName().trim().isEmpty() ? names.get(currentIndex) : player.song.getName())
+			+ "\\n\",\"color\":\"green\"}";
+			if (!player.song.getAuthor().trim().equals("")) toTell +=
+					",\"Author: \",{\"text\":\"" + player.song.getAuthor()
+					+ "\\n\",\"color\":\"gold\"}";
+			if (!player.song.getOriginalAuthor().trim().equals("")) toTell +=
+					",\"Original author: \",{\"text\":\"" + player.song.getOriginalAuthor()
+					+ "\\n\",\"color\":\"gold\"}";
+			if (!player.song.getDescription().trim().equals("")) toTell +=
+					",\"Description: \\n\",{\"text\":\"" + player.song.getDescription()
+					+ "\\n\",\"italic\":true}";
+			toTell += ",\"Length: \",{\"text\":\"" + GuiSongs.getTimeString(player.length)
+					+ "\",\"color\":\"gold\"}],\"color\":\"green\"}}]";
+			Minecraft.getMinecraft().player.sendMessage(ITextComponent.Serializer.jsonToComponent(toTell));
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public static boolean isPlaying() {
@@ -75,12 +99,12 @@ public class Main {
 	public static void seek(int index) {
 		if (playing) player.stop();
 		current = songs.iterator();
+		currentIndex = index;
 		if (index > 0) for (int i = 0; i < index; i++) current.next();
 		player = new NBSPlayer(current.next());
 		playing = true;
 		player.start();
 		sendMsg();
-		currentIndex = index;
 	}
 	
 	/**

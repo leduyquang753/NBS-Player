@@ -1,0 +1,7 @@
+{
+  "homepage": "http://minecraft.curseforge.com/projects/nbs-player",
+  "<mcversion>": {
+    "1.0": "First public release of the mod.", 
+    "1.1": "Bugfixes, tooltip for Now playing message."
+  }
+}
