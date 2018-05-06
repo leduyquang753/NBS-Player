@@ -1,8 +1,18 @@
 {
   "homepage": "http://minecraft.curseforge.com/projects/nbs-player",
-  "[1.8, 1.12.2]": {
+  "1.8": {
     "1.0": "First public release of the mod.", 
     "1.1": "Bugfixes, tooltip for Now playing message.",
-	"1.1.0.1": "Fixed a bug that under 1-minute songs make the Now playing messages invalid to be sent."
-  }
+    "1.1.0.1": "Fixed a bug that under 1-minute songs make the Now playing messages invalid to be sent."
+  },
+  "1.12": {
+    "1.0": "First public release of the mod.", 
+    "1.1": "Bugfixes, tooltip for Now playing message.",
+    "1.1.0.1": "Fixed a bug that under 1-minute songs make the Now playing messages invalid to be sent."
+  },
+  "promos": {
+	  "1.8-latest": "1.1.0.1",
+		"1.8-recommended": "1.1.0.1",
+		"1.12-latest": "1.1.0.1",
+		"1.12-recommended": "1.1.0.1"
 }
