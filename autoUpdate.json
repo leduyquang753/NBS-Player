@@ -11,8 +11,8 @@
     "1.1.0.1": "Fixed a bug that under 1-minute songs make the Now playing messages invalid to be sent."
   },
   "promos": {
-	  "1.8-latest": "1.1.0.1",
-		"1.8-recommended": "1.1.0.1",
-		"1.12-latest": "1.1.0.1",
-		"1.12-recommended": "1.1.0.1"
+    "1.8-latest": "1.1.0.1",
+    "1.8-recommended": "1.1.0.1",
+    "1.12-latest": "1.1.0.1",
+    "1.12-recommended": "1.1.0.1"
 }
