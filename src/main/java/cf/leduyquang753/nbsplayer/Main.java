@@ -19,7 +19,7 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
 
-@Mod(name="NBS Player", modid="nbsplayer", version="1.1", acceptedMinecraftVersions="[1.12, 1.12.2]")
+@Mod(name="NBS Player", modid="nbsplayer", version="1.1", acceptedMinecraftVersions="[1.12, 1.12.2]", updateJSON="https://github.com/leduyquang753/NBS-Player/raw/master/autoUpdate.json")
 public class Main {
 	public static int currentIndex = 0;
 	public static List<Song> songs = new ArrayList<Song>();
